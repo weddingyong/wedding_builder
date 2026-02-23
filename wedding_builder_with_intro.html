@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>결혼식 식순 빌더</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6f1;
+    --warm-white: #fff9f3;
+    --gold: #c9a96e;
+    --gold-light: #e8d4a8;
+    --gold-dark: #9a7a48;
+    --charcoal: #2c2825;
+    --warm-gray: #7a7068;
+    --border: #e8ddd0;
+  }
+  .footer-link { text-decoration: none; display: inline-block; }
+  .footer-handle { display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; color: var(--gold); letter-spacing: 1px; margin-bottom: 5px; transition: opacity 0.2s; }
+  .footer-handle:hover { opacity: 0.8; }
+  .insta-icon { width: 18px; height: 18px; stroke: var(--gold); }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Noto Serif KR', serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; font-size: 15px; overscroll-behavior-y: none; }
+
+  /* ── 인트로 페이지 ── */
+  #introPage {
+position: fixed;
+  inset: 0;
+  background: var(--charcoal);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; 를 제거하거나 flex-start로 변경 */
+  justify-content: flex-start; 
+  padding: 60px 24px 80px; /* 상단 패딩을 넉넉히 주어 제목 노출 보장 */
+  overflow-y: auto;
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  /* 모바일에서 스크롤이 부드럽게 되도록 추가 */
+  -webkit-overflow-scrolling: touch;
+  }
+  #introPage.hide {
+    opacity: 0;
+    transform: translateY(-24px);
+    pointer-events: none;
+  }
+  .intro-wrap {
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    animation: introFadeIn 0.7s ease both;
+  }
+  @keyframes introFadeIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .intro-ornament {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .intro-logo-divider {
+    width: 44px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 26px;
+  }
+  .intro-greeting {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 27px;
+    font-weight: 300;
+    color: var(--warm-white);
+    letter-spacing: 1px;
+    line-height: 1.55;
+    margin-bottom: 4px;
+  }
+  .intro-name-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    display: block;
+  }
+  .intro-desc {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.55);
+    line-height: 2.05;
+    margin-bottom: 6px;
+    font-weight: 300;
+    word-break: keep-all;
+    text-align: left;
+  }
+  .intro-cheer {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--gold-light);
+    letter-spacing: 0.5px;
+    margin: 24px 0 32px;
+    display: block;
+    text-align: center;
+  }
+
+  /* 드리는 말씀 카드 */
+  .intro-notice {
+    background: rgba(255,255,255,0.038);
+    border: 1px solid rgba(201,169,110,0.18);
+    border-radius: 8px;
+    padding: 22px 20px;
+    text-align: left;
+    margin-bottom: 32px;
+  }
+  .intro-notice-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: block;
+    opacity: 0.85;
+  }
+  .intro-notice-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+  .intro-notice-list li {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.46);
+    line-height: 1.9;
+    padding-left: 16px;
+    position: relative;
+    font-weight: 300;
+    word-break: keep-all;
+  }
+  .intro-notice-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    opacity: 0.45;
+    font-size: 10px;
+    top: 3px;
+  }
+
+  /* 시작 버튼 */
+  .intro-start-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--charcoal);
+    border: none;
+    border-radius: 4px;
+    padding: 18px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    transition: all 0.22s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .intro-start-btn:active { background: var(--gold-dark); transform: scale(0.99); }
+  .intro-start-arrow {
+    font-size: 16px;
+    transition: transform 0.22s;
+    display: inline-block;
+  }
+  .intro-start-btn:hover .intro-start-arrow { transform: translateX(5px); }
+
+  .intro-insta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(201,169,110,0.5);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+  }
+  .intro-insta-link:hover { color: var(--gold); }
+  .intro-insta-icon { width: 14px; height: 14px; stroke: currentColor; }
+
+  /* ── 메인 앱 (초기엔 숨김) ── */
+  #mainApp {
+    opacity: 0;
+    transition: opacity 0.5s ease 0.1s;
+    pointer-events: none;
+  }
+  #mainApp.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .header { background: var(--charcoal); padding: 44px 20px 36px; text-align: center; position: relative; overflow: hidden; }
+  .header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 0%, rgba(201,169,110,0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 100%, rgba(201,169,110,0.1) 0%, transparent 50%); }
+  .header-ornament { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold); font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px; opacity: 0.8; position: relative; }
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; color: var(--warm-white); letter-spacing: 2px; margin-bottom: 6px; position: relative; }
+  .header-divider { width: 50px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 14px auto; }
+  .header-sub { color: var(--gold-light); font-size: 12px; letter-spacing: 0.5px; font-weight: 300; position: relative; line-height: 1.6; padding: 0 8px; }
+
+  /* ── 스티키 상단 전체 ── */
+  .sticky-top { position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 14px rgba(44,40,37,0.22); }
+
+  /* ── 타이머 바 ── */
+  .timer-bar { background: var(--gold); padding: 9px 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .timer-label { font-size: 12px; color: var(--charcoal); letter-spacing: 0.5px; }
+  .timer-value { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--charcoal); min-width: 52px; text-align: center; transition: color 0.3s; }
+  .timer-value.over-limit { color: #c0392b; }
+  .timer-note { font-size: 10px; color: rgba(44,40,37,0.5); letter-spacing: 0.3px; }
+
+  /* ── 식순 전체 표시 바 ── */
+  .order-bar {
+    background: var(--charcoal);
+    padding: 8px 12px 9px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 3px;
+    align-items: center;
+  }
+
+  .order-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* 항목 pill */
+  .order-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 7px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+  .order-pill.active {
+    background: rgba(201,169,110,0.22);
+    border: 1px solid rgba(201,169,110,0.45);
+  }
+  .order-pill.inactive {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .pill-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9px;
+    font-style: italic;
+    line-height: 1;
+  }
+  .order-pill.active .pill-num { color: var(--gold); }
+  .order-pill.inactive .pill-num { color: rgba(255,255,255,0.2); }
+
+  .pill-name {
+    font-size: 10px;
+    letter-spacing: 0.1px;
+    line-height: 1;
+  }
+  .order-pill.active .pill-name { color: rgba(255,255,255,0.9); }
+  .order-pill.inactive .pill-name { color: rgba(255,255,255,0.22); }
+
+  /* 화살표 */
+  .order-arrow {
+    font-size: 8px;
+    color: rgba(201,169,110,0.3);
+    line-height: 1;
+    margin: 0 1px;
+  }
+  /* 비활성 화살표 */
+  .order-arrow.dim { color: rgba(255,255,255,0.1); }
+
+  /* ── 컨트롤 행 ── */
+  .controls-row { background: var(--warm-white); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .legend { display: flex; gap: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--warm-gray); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-dot.required { background: var(--gold); }
+  .legend-dot.optional { background: var(--border); border: 1px solid var(--warm-gray); }
+  .select-all-btn { font-family: 'Noto Serif KR', serif; font-size: 11px; color: var(--gold-dark); background: rgba(201,169,110,0.12); border: 1px solid rgba(201,169,110,0.35); border-radius: 20px; padding: 6px 12px; cursor: pointer; white-space: nowrap; transition: all 0.2s; -webkit-appearance: none; line-height: 1; }
+  .select-all-btn:active { background: rgba(201,169,110,0.25); }
+
+  .main { max-width: 680px; margin: 0 auto; padding: 14px 12px 12px; }
+
+  /* ── 식순 카드 ── */
+  .ceremony-item { background: var(--warm-white); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 7px; transition: opacity 0.2s; overflow: hidden; }
+  .ceremony-item.optional-item { background: #f7f4f0; }
+  .ceremony-item.optional-item.unchecked,
+  .ceremony-item.skippable-item.unchecked { opacity: 0.52; }
+
+  .ceremony-header { display: flex; align-items: center; padding: 13px 14px; cursor: pointer; gap: 10px; user-select: none; min-height: 52px; }
+  .step-number { font-family: 'Cormorant Garamond', serif; font-size: 11px; color: var(--warm-gray); min-width: 18px; font-style: italic; flex-shrink: 0; }
+  .checkbox-wrap { position: relative; width: 22px; height: 22px; flex-shrink: 0; }
+  .checkbox-wrap input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; margin: 0; }
+  .checkbox-custom { width: 22px; height: 22px; border: 1.5px solid var(--border); border-radius: 3px; background: white; display: flex; align-items: center; justify-content: center; transition: all 0.2s; pointer-events: none; }
+  .checkbox-custom::after { content: '✓'; font-size: 13px; color: var(--gold); opacity: 0; transition: opacity 0.2s; }
+  input:checked ~ .checkbox-custom { border-color: var(--gold); background: rgba(201,169,110,0.08); }
+  input:checked ~ .checkbox-custom::after { opacity: 1; }
+  .required-badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.3px; flex-shrink: 0; }
+  .required-badge.req { background: rgba(201,169,110,0.15); color: var(--gold-dark); border: 1px solid rgba(201,169,110,0.3); }
+  .required-badge.opt { background: rgba(122,112,104,0.07); color: var(--warm-gray); border: 1px solid var(--border); }
+  .ceremony-title { flex: 1; font-size: 15px; font-weight: 400; color: var(--charcoal); letter-spacing: 0.5px; }
+  .ceremony-duration { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--warm-gray); font-style: italic; flex-shrink: 0; }
+  .expand-icon { color: var(--gold); font-size: 9px; transition: transform 0.3s ease; flex-shrink: 0; margin-left: 2px; }
+  .ceremony-item.expanded .expand-icon { transform: rotate(180deg); }
+
+  /* 상세 패널 */
+  .ceremony-detail { display: none; border-top: 1px solid var(--border); background: var(--cream); }
+  .ceremony-item.expanded .ceremony-detail { display: block; animation: slideDown 0.25s ease; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .detail-inner { padding: 18px 16px; }
+  .detail-section { margin-bottom: 18px; }
+  .detail-section:last-child { margin-bottom: 0; }
+  .detail-section-title { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .detail-section-content { font-size: 13px; line-height: 1.85; color: var(--warm-gray); font-weight: 300; white-space: pre-line; }
+  .ment-box { background: white; border-left: 2px solid var(--gold); padding: 12px 14px; font-size: 13px; line-height: 1.85; color: var(--charcoal); font-style: italic; border-radius: 0 2px 2px 0; white-space: pre-line; }
+  .skip-notice { background: rgba(201,169,110,0.08); border: 1px dashed rgba(201,169,110,0.4); border-radius: 4px; padding: 9px 12px; font-size: 12px; color: var(--warm-gray); line-height: 1.6; margin-bottom: 14px; }
+
+  /* ── 서브옵션 (접힘/펼침) ── */
+  .sub-option-section {
+    border-top: 1px solid var(--border);
+    background: rgba(201,169,110,0.04);
+  }
+
+  /* 서브옵션 헤더 (항상 보임) */
+  .sub-option-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px 9px 54px;
+    cursor: pointer;
+    user-select: none;
+    gap: 8px;
+  }
+  .sub-option-header:active { background: rgba(201,169,110,0.08); }
+
+  .sub-option-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .sub-option-type {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  /* 현재 선택값 표시 */
+  .sub-option-current {
+    font-size: 12px;
+    color: var(--charcoal);
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 12px;
+    padding: 2px 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    letter-spacing: 0.2px;
+  }
+  .sub-option-toggle-icon {
+    font-size: 9px;
+    color: var(--gold);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  .sub-option-section.open .sub-option-toggle-icon { transform: rotate(180deg); }
+
+  /* 라디오 패널 (접힘/펼침) */
+  .sub-option-body {
+    display: none;
+    padding: 0 14px 12px 54px;
+  }
+  .sub-option-section.open .sub-option-body { display: block; animation: slideDown 0.2s ease; }
+
+  .radio-group { display: flex; flex-direction: column; gap: 6px; }
+  .radio-item { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); transition: all 0.18s; background: white; }
+  .radio-item:has(input:checked) { border-color: var(--gold); background: rgba(201,169,110,0.07); }
+  .radio-item input[type="radio"] { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border: 1.5px solid var(--border); border-radius: 50%; background: white; flex-shrink: 0; margin-top: 1px; cursor: pointer; transition: all 0.18s; }
+  .radio-item input[type="radio"]:checked { border-color: var(--gold); background: var(--gold); box-shadow: inset 0 0 0 3px white; }
+  .radio-item-text { display: flex; flex-direction: column; gap: 2px; }
+  .radio-item-title { font-size: 13px; color: var(--charcoal); font-weight: 400; letter-spacing: 0.2px; }
+  .radio-item-desc { font-size: 11px; color: var(--warm-gray); line-height: 1.6; font-weight: 300; }
+
+  /* ── 액션 버튼 ── */
+  .action-section { padding: 4px 12px 20px; max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+  .copy-btn { width: 100%; background: var(--charcoal); color: var(--gold-light); border: none; border-radius: 4px; padding: 16px; font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; transition: background 0.2s; }
+  .copy-btn:active { background: #1a1614; }
+  .share-btn { width: 100%; background: var(--warm-white); color: var(--gold-dark); border: 1.5px solid var(--gold); border-radius: 4px; padding: 16px; font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; transition: all 0.2s; }
+  .share-btn:active { background: rgba(201,169,110,0.12); }
+  .insta-consult-btn { width: 100%; background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; border: none; border-radius: 4px; padding: 16px; font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; -webkit-appearance: none; transition: opacity 0.2s; text-decoration: none; }
+  .insta-consult-btn:active { opacity: 0.85; }
+  .insta-consult-btn-icon { width: 22px; height: 22px; flex-shrink: 0; }
+  .insta-consult-btn-text { display: flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1.3; }
+  .insta-consult-btn-main { font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+  .insta-consult-btn-sub { font-size: 11px; opacity: 0.88; letter-spacing: 0.3px; }
+
+  /* ── 공유 모달 ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(44,40,37,0.6); z-index: 9000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .share-modal { background: var(--warm-white); border-radius: 16px 16px 0 0; padding: 28px 20px 40px; width: 100%; max-width: 680px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); }
+  .modal-overlay.show .share-modal { transform: translateY(0); }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 22px; }
+  .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; color: var(--charcoal); text-align: center; letter-spacing: 1px; margin-bottom: 6px; }
+  .modal-subtitle { font-size: 11px; color: var(--warm-gray); text-align: center; margin-bottom: 24px; letter-spacing: 0.3px; }
+  .share-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .share-option { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 14px 8px; border-radius: 10px; border: 1px solid var(--border); background: white; transition: all 0.2s; -webkit-appearance: none; }
+  .share-option:active { background: var(--cream); transform: scale(0.96); }
+  .share-option-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .share-option-icon.kakao { background: #FEE500; }
+  .share-option-icon.link { background: rgba(201,169,110,0.15); font-size: 20px; }
+  .share-option-icon.sms { background: #e8f5e9; }
+  .share-option-icon.more { background: #f0f0f0; }
+  .share-option-label { font-size: 11px; color: var(--warm-gray); letter-spacing: 0.3px; text-align: center; }
+  .url-copy-row { display: flex; gap: 8px; align-items: center; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; }
+  .url-text { flex: 1; font-size: 12px; color: var(--warm-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: monospace; }
+  .url-copy-mini-btn { font-size: 11px; color: var(--gold-dark); background: rgba(201,169,110,0.15); border: 1px solid rgba(201,169,110,0.35); border-radius: 20px; padding: 5px 12px; cursor: pointer; white-space: nowrap; -webkit-appearance: none; font-family: 'Noto Serif KR', serif; transition: all 0.2s; flex-shrink: 0; }
+  .url-copy-mini-btn:active { background: rgba(201,169,110,0.3); }
+  .modal-close-btn { width: 100%; background: transparent; color: var(--warm-gray); border: 1px solid var(--border); border-radius: 8px; padding: 13px; font-family: 'Noto Serif KR', serif; font-size: 14px; cursor: pointer; -webkit-appearance: none; transition: all 0.2s; }
+  .modal-close-btn:active { background: var(--cream); }
+
+  .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--charcoal); color: var(--gold-light); padding: 12px 26px; border-radius: 24px; font-size: 13px; letter-spacing: 0.5px; opacity: 0; pointer-events: none; z-index: 9999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: opacity 0.4s ease; }
+  .toast.show { opacity: 1; }
+
+  .warning-overlay { position: fixed; inset: 0; background: rgba(44,40,37,0.65); z-index: 9500; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .warning-overlay.show { opacity: 1; pointer-events: all; }
+  .warning-modal { background: var(--warm-white); border-radius: 14px; padding: 32px 24px 24px; max-width: 340px; width: 100%; text-align: center; transform: scale(0.92); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+  .warning-overlay.show .warning-modal { transform: scale(1); }
+  .warning-icon { font-size: 40px; margin-bottom: 14px; display: block; }
+  .warning-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: var(--charcoal); margin-bottom: 14px; letter-spacing: 0.5px; line-height: 1.4; }
+  .warning-body { font-size: 13px; color: var(--warm-gray); line-height: 1.85; margin-bottom: 24px; }
+  .warning-body strong { color: #c0392b; }
+  .warning-confirm-btn { width: 100%; background: var(--charcoal); color: var(--gold-light); border: none; border-radius: 8px; padding: 14px; font-family: 'Noto Serif KR', serif; font-size: 14px; letter-spacing: 0.5px; cursor: pointer; -webkit-appearance: none; transition: background 0.2s; }
+  .warning-confirm-btn:active { background: #1a1614; }
+
+  .footer { background: var(--charcoal); padding: 32px 20px 40px; text-align: center; }
+  .footer-divider { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto 22px; }
+  .footer-name { font-size: 13px; color: var(--warm-white); letter-spacing: 1.5px; margin-bottom: 18px; }
+  .footer-desc { font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.9; max-width: 280px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<!-- ── 인트로 페이지 ── -->
+<div id="introPage">
+  <div class="intro-wrap">
+    <span class="intro-ornament">Wedding Ceremony</span>
+    <div class="intro-logo-divider"></div>
+
+    <div class="intro-greeting">안녕하세요,<br>사회자 이용진입니다.</div>
+    <span class="intro-name-tag">@wedding_yong</span>
+
+    <p class="intro-desc">
+      '혼인서약과 성혼선언이 무슨 차이인가요?'<br>
+      '꼭 해야 하나요?'<br>
+      '시간이 너무 짧지는 않을까요?'<br><br>
+      결혼을 준비하고 계신 어느 누구나<br>
+      우리 결혼식을 스케치해보실 수 있도록<br>
+      이 페이지를 제작하게 되었습니다. <br><br>
+     차디찬(?) 결혼식 준비 과정에서 <br>조금이나마 따스함을 느끼셨으면 합니다.<br><br>
+    </p>
+
+    <div class="intro-notice">
+      <span class="intro-notice-title"><center>드리는 말씀</center></span>
+      <ul class="intro-notice-list">
+        <li>주례 없는 결혼식 기준입니다만, 주례가 있더라도 도움되실겁니다!</li>
+        <li>각 식순별 시간(분)은 대략적 수치이며, 결혼식마다 조금씩 다를 수 있습니다.</li>
+        <li>경품 추첨, 닭 날리기 등 이벤트성 식순은 제외되어 있으며, 추가하실 경우 사회자와 꼭 협의하세요!</li>
+        <li>신부 입장, 성혼선언, 덕담 등은 혼주님과 꼭 대화를 나눠보세요!</li>
+        <li>무엇보다 '우리가 원하는 분위기'로, '우리답게' 만들어나가시길 바랄게요!</li>
+      </ul>
+    </div>
+
+    <button class="intro-start-btn" onclick="startBuilder()">
+      식순 빌더 시작하기
+      <span class="intro-start-arrow">→</span>
+    </button>
+
+    <a href="https://www.instagram.com/wedding_yong/" target="_blank" class="intro-insta-link">
+      <svg class="intro-insta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+      @wedding_yong
+    </a>
+  </div>
+</div>
+
+<!-- ── 메인 앱 ── -->
+<div id="mainApp">
+
+<div class="header">
+  <div class="header-ornament">Wedding Ceremony</div>
+  <h1>결혼식 식순 빌더</h1>
+  <div class="header-divider"></div>
+  <div class="header-sub">우리 결혼식의 식순, 어렵지 않게 구성해보세요 :)</div>
+</div>
+
+<div class="sticky-top">
+  <div class="timer-bar">
+    <span class="timer-label">예상 소요시간</span>
+    <span class="timer-value" id="totalTime">00분</span>
+    <span class="timer-note">선택 시 자동 계산</span>
+  </div>
+  <div class="order-bar" id="orderBar">
+    <!-- JS로 렌더링 -->
+  </div>
+</div>
+
+<div class="controls-row">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot required"></div><span>필수 항목</span></div>
+    <div class="legend-item"><div class="legend-dot optional"></div><span>선택 항목</span></div>
+  </div>
+  <button class="select-all-btn" id="selectAllBtn" onclick="toggleSelectAll()">선택 항목 전체 선택</button>
+</div>
+
+<div class="main"><div id="ceremonyList"></div></div>
+
+<div class="action-section">
+  <button class="copy-btn" onclick="copySchedule()"><span>📋</span> 식순 복사하기</button>
+  <button class="share-btn" onclick="openShareModal()"><span>🔗</span> 링크 공유하기</button>
+  <a class="insta-consult-btn" href="https://www.instagram.com/wedding_yong/" target="_blank">
+    <svg class="insta-consult-btn-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+    </svg>
+    <div class="insta-consult-btn-text">
+      <span class="insta-consult-btn-main">결혼식 사회 상담 / 문의</span>
+      <span class="insta-consult-btn-sub">사회자 이용진 @wedding_yong</span>
+    </div>
+  </a>
+</div>
+
+<div class="modal-overlay" id="shareOverlay" onclick="handleOverlayClick(event)">
+  <div class="share-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">링크 공유하기</div>
+    <div class="modal-subtitle">아래 방법으로 페이지 링크를 공유해보세요</div>
+    <div class="share-options">
+      <button class="share-option" onclick="shareKakao()"><div class="share-option-icon kakao">💬</div><span class="share-option-label">카카오톡</span></button>
+      <button class="share-option" onclick="shareSMS()"><div class="share-option-icon sms">✉️</div><span class="share-option-label">문자 보내기</span></button>
+      <button class="share-option" onclick="shareLink()"><div class="share-option-icon link">🔗</div><span class="share-option-label">링크 복사</span></button>
+      <button class="share-option" onclick="shareNative()"><div class="share-option-icon more">⋯</div><span class="share-option-label">더 보기</span></button>
+    </div>
+    <div class="url-copy-row">
+      <span class="url-text" id="shareUrlText">페이지 URL을 불러오는 중...</span>
+      <button class="url-copy-mini-btn" onclick="shareLink()">복사</button>
+    </div>
+    <button class="modal-close-btn" onclick="closeShareModal()">닫기</button>
+  </div>
+</div>
+
+<div class="warning-overlay" id="warningOverlay">
+  <div class="warning-modal">
+    <span class="warning-icon">⚠️</span>
+    <div class="warning-title">식순 시간이<br>30분을 초과했어요!</div>
+    <div class="warning-body">결혼식 시간이 <strong>30분을 초과</strong>할 가능성이 높습니다.<br>원판 촬영 시간이 촉박할 수 있으니,<br>사회자와 꼭 상의하세요!</div>
+    <button class="warning-confirm-btn" onclick="closeWarning()">확인했습니다</button>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-divider"></div>
+  <a href="https://www.instagram.com/wedding_yong/" target="_blank" class="footer-link">
+    <div class="footer-handle">
+      <svg class="insta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+      @wedding_yong
+    </div>
+  </a>
+  <div class="footer-name">사회자 이용진</div>
+  <div class="footer-desc">결혼을 준비하고 계신 모든 예비 신랑신부님들께<br>작게나마 도움이 되길 바라는 마음으로 제작하였습니다.<br><br>비상업적 용도로만 사용해주세요 :)</div>
+</div>
+
+</div><!-- /mainApp -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 인트로 → 빌더 전환 ──────────────────────────────────────
+function startBuilder(){
+  const intro = document.getElementById('introPage');
+  const main  = document.getElementById('mainApp');
+  intro.classList.add('hide');
+  main.classList.add('visible');
+  // 인트로 완전히 사라진 후 DOM에서 제거 (스크롤 영향 없애기)
+  setTimeout(()=>{ intro.style.display='none'; }, 650);
+}
+
+const subOptions = {
+  candle:'mothers', bride:'father', declaration:'emcee',
+  parents_words:'one', speech:'one', song:'one',
+};
+
+const subCopyLabel = {
+  candle:        { mothers:'양가 어머님', parents:'양가 부모님 리마인드' },
+  bride:         { father:'아버님과 함께', solo:'단독 입장' },
+  declaration:   { emcee:'사회자 낭독', parents:'부모님 낭독' },
+  parents_words: { one:'한 분', both:'양가 각 한 분씩' },
+  speech:        { one:'한 분', two:'두 분' },
+  song:          { one:'한 곡', two:'두 곡' },
+};
+
+// 서브옵션 헤더 레이블
+const subTypeLabel = {
+  candle:'방식', bride:'방식', declaration:'방식',
+  parents_words:'인원', speech:'인원', song:'곡수',
+};
+
+// 상단 바용 짧은 이름
+const chipName = {
+  opening:'개식사', candle:'화촉점화', intro_video:'소개영상',
+  groom_entrance:'신랑입장', bride_entrance:'신부입장', bow:'맞절',
+  vow:'혼인서약', flower_girl:'화동', ring:'예물교환',
+  declaration:'성혼선언', parents_words:'부모님덕담', speech:'축사',
+  song:'축가', parents_video:'감사영상', greeting:'부모님인사',
+  march:'행진', closing:'폐식사',
+};
+
+const subDataMap = {
+  candle:{
+    mothers:{ duration:3, description:'양가 어머님께서 화합의 촛불(화촉)을 밝혀주시면서 결혼식의 시작을 알립니다.\n\n화촉점화 후 맞절과 하객 인사까지 진행됩니다.', ment:`오늘의 첫번째 순서, 양가 어머님께서 열어주시겠습니다.\n뒷 쪽을 한 번 바라봐주실까요?\n\n너무나 아름다우신 양가 어머님께서, 손 꼭 잡으시고 입장을 기다리고 계십니다.\n결혼식의 첫번째 순서이기 때문에 많이 떨리실 수 있을텐데요. 두 분 입장해주실 때 따스한 박수로 맞이해주시길 바랍니다.\n양가 어머님, 입장해주십시오!\n\n이제 어머님들께서는 아들딸들의 미래를, 환하게 밝혀주시겠습니다.\n화촉에 점화를 해주실텐데요!\n\n먼저 신랑의 어머님께 부탁드리겠습니다.\n이어서 신부의 어머님께서도 소중한 손길로 밝혀주시겠습니다.\n\n이제 두 분께서는 단상 앞으로 오셔서 서로를 마주보시고 서시겠습니다.\n양가 화합의 의미를 담아, 서로에게 인사 나누시겠습니다. 양가 어머님, 맞절\n\n이어서 하객 여러분들을 향해 서시겠습니다.\n소중한 걸음 해주신 모든 하객 여러분들께도 인사 올리겠습니다. 양가 어머님, 인사\n\n어머님들께서는 편안하게 착석해주시겠습니다.` },
+    parents:{ duration:4, description:'양가 부모님 네 분께서 함께 입장하시어 화촉에 점화하는 방식입니다.\n리마인드 웨딩 형식으로, 부모님의 존재감을 더욱 특별하게 살릴 수 있습니다.\n\n어머님만 입장하실 때보다 약 1분 이상 시간이 소요됩니다.', ment:`오늘의 첫번째 순서, 양가 부모님께서 함께 열어주시겠습니다.\n뒷 쪽을 한 번 바라봐주실까요?\n\n오늘의 신랑과 신부를 이 세상에서 가장 사랑하는 분들이십니다.\n양가 부모님 네 분께서 손을 꼭 잡고 입장을 기다리고 계시는데요.\n따스한 박수로 맞이해주시길 바랍니다.\n양가 부모님, 입장해주십시오!\n\n이제 부모님들께서는 아들딸들의 빛나는 앞날을 환하게 밝혀주시겠습니다.\n화촉에 점화를 해주실텐데요!\n\n먼저 신랑의 어머님께 부탁드리겠습니다.\n이어서 신부의 어머님께서도 소중한 손길로 밝혀주시겠습니다.\n\n이제 네 분께서는 단상 앞으로 오셔서 서로를 마주보시고 서시겠습니다.\n양가 화합의 의미를 담아, 서로에게 인사 나누시겠습니다. 양가 부모님, 맞절\n\n이어서 하객 여러분들을 향해 서시겠습니다.\n소중한 걸음 해주신 모든 하객 여러분들께도 인사 올리겠습니다. 양가 부모님, 인사\n\n부모님들께서는 편안하게 착석해주시겠습니다.` }
+  },
+  bride:{
+    father:{ duration:3, description:'신부님께서 아버님과 함께 입장하시는 순서입니다. 아버님께서 신부를 에스코트하시며 신랑에게 인도해주시는 형식으로 진행됩니다.', ment:`오늘의 아름다운 주인공, 신부를 모셔보겠습니다.\n로드 뒷쪽의 문을 바라봐주시기 바랍니다.\n문 뒤에서 아름다운 신부님께서 아버님과 함께 설레는 마음으로 입장을 기다리고 있는데요,\n문이 열리고 신부가 입장할 때, 여러분들의 따뜻한 박수로 맞이 해 주시길 바랍니다.\n신부, 입장` },
+    solo:{ duration:3, description:'신부님께서 홀로 당당하게 입장하시는 순서입니다. 신부의 독립적인 모습을 강조하는 방식으로, 최근 선택하시는 분들이 늘고 있습니다.', ment:`오늘의 아름다운 주인공, 신부를 모셔보겠습니다.\n로드 뒷쪽의 문을 바라봐주시기 바랍니다.\n문 뒤에서 아름다운 신부님께서 설레는 마음으로 입장을 기다리고 있는데요,\n문이 열리고 신부가 입장할 때, 여러분들의 따뜻한 박수로 맞이 해 주시길 바랍니다.\n신부, 입장` }
+  },
+  declaration:{
+    emcee:{ duration:1, description:'두 사람이 정식 부부가 되었음을 선포합니다. 사회자가 성혼선언문을 대독합니다.', ment:`다음은 두 사람이 부부가 되었음을 선언하는 성혼선언이 있겠습니다.\n많은 분들을 대표해서, 사회자가 성혼선언문을 낭독하겠습니다.` },
+    parents:{ duration:1, description:'두 사람이 정식 부부가 되었음을 선포합니다. 양가 부모님 중 한 분께서 성혼선언문을 낭독해주십니다.', ment:`다음은 두 사람이 부부가 되었음을 선언하는 성혼선언이 있겠습니다.\n성혼선언문은 신랑의 아버님께서 낭독해주시겠습니다.\n아버님, 자리해주시겠습니까?` }
+  },
+  parents_words:{
+    one:{ duration:3, description:'양가 부모님 중 한 분께서 새로운 출발을 하는 자녀에게 따뜻한 조언을 전해주시는 순서입니다.', ment:`부부가 된 두 사람에게, 귀중한 말씀이 준비가 되어있죠.\n신부의 아버님께서 따스한 말씀 전해주시겠습니다. 아버님 자리해주실까요?\n아버님을 큰 박수로 모시겠습니다.` },
+    both:{ duration:5, description:'양가 부모님 각 한 분씩, 두 분께서 차례로 따뜻한 말씀을 전해주시는 순서입니다.', ment:`부부가 된 두 사람에게, 귀중한 말씀이 준비가 되어있죠.\n먼저 신부의 아버님께서 따스한 말씀 전해주시겠습니다. 아버님을 큰 박수로 모시겠습니다.\n\n이어서 신랑의 아버님께서도 소중한 말씀 전해주시겠습니다. 아버님을 큰 박수로 모시겠습니다.` }
+  },
+  speech:{
+    one:{ duration:3, description:'지인 한 분께서 두 사람의 결혼을 축하하며 전하는 메시지입니다.', ment:`친구분의 축사가 이어지겠습니다!\n신부님과 중학교 때부터 함께 해 오셨다고 해요! 자리해주실까요?\nOOO님을 격려의 박수로 모시겠습니다!` },
+    two:{ duration:5, description:'지인 두 분께서 차례로 두 사람의 결혼을 축하하며 전하는 메시지입니다.', ment:`먼저 첫 번째 축사 말씀이 이어지겠습니다!\n신부님과 중학교 때부터 함께 해 오셨다고 해요! 자리해주실까요?\nOOO님을 격려의 박수로 모시겠습니다!\n\n이어서 두 번째 축사 말씀도 준비되어 있습니다!\n신랑의 오랜 친구분이신 OOO님께서 자리해주시겠습니다!\n큰 박수로 모시겠습니다!` }
+  },
+  song:{
+    one:{ duration:3, description:'축하의 노래 한 곡으로 예식의 분위기를 더욱 풍성하게 만듭니다.', ment:`다음은 두 사람에게 보내는 축가가 한 곡 준비되어 있습니다.\n축가는 신랑의 오래된 친구분이신, OOO님께서 준비해주셨습니다!\n큰 박수로 모시겠습니다!` },
+    two:{ duration:5, description:'축하의 노래 두 곡으로 예식의 분위기를 더욱 풍성하게 만듭니다.', ment:`다음은 두 사람에게 보내는 축가가 두 곡 준비되어 있습니다.\n먼저 첫 번째 축가는 신랑의 오래된 친구분이신, OOO님께서 준비해주셨습니다!\n큰 박수로 모시겠습니다!\n\n이어서 두 번째 축가는 신부의 소중한 친구분이신, OOO님께서 준비해주셨습니다!\n큰 박수로 모시겠습니다!` }
+  }
+};
+
+const ceremonies = [
+  { id:'opening', title:'개식사', required:true, duration:1, description:'사회자가 결혼식의 시작을 알립니다. 사회자 소개, 주례 유무, 결혼식의 취지 설명과 하객분들의 집중을 유도합니다.', ment:`오래 기다리셨습니다! 결혼식 진행을 위한 모든 준비를 마쳤습니다.\n소중한 걸음, 귀한 걸음 해주신 모든 하객 여러분들께 진심으로 감사의 말씀을 전합니다.\n\n사회자 소개부터 드리겠습니다.\n저는 오늘 우리 두 사람의 아름다운 결혼식 사회자로 초대받았습니다.\n사회자 이용진입니다. 인사드리겠습니다.\n\n오늘 우리 두 사람의 결혼식에는 주례 선생님이 별도로 계시지 않습니다.\n그러한만큼 신랑 신부와 양가 부모님, 그리고 하객 여러분들.\n모두가 다 함께 만들어가는 보다 특별한 결혼식이 될 것 같은데요!\n여러분들께서 예식 중간 중간마다 많은 박수와 함성으로 함께 채워주시길 바랍니다.\n\n그럼 지금부터, 신랑 (신랑) 군과 신부 (신부) 양의 특별하고, 행복한 결혼식을!\n여러분들의 큰 박수와 함께, 시작하겠습니다!` },
+  { id:'candle', title:'화촉점화', required:true, skippable:true, defaultChecked:true, subType:'candle' },
+  { id:'intro_video', title:'신랑신부 소개영상', required:false, duration:3, description:'그간 두 분의 연애 스토리를 담은 영상으로, 보통 신랑 입장 전 재생합니다.', ment:`그럼 주인공들을 모셔보기 전에, 영상으로 먼저 만나보도록 하겠습니다.\n오늘의 신랑신부는 어떤 분들일지! 함께 만나보시죠!` },
+  { id:'groom_entrance', title:'신랑 입장', required:true, duration:2, description:'신랑님께서 입장하시는 순서입니다. 웨딩홀마다 입장 동선에 차이는 있으나, 대부분 로드 끝에 서계시다가 입장하시게 됩니다.', ment:`그럼 오늘의 주인공들! 바로 모셔보겠습니다! 다시 한 번 뒷쪽을 바라봐주시길 바랍니다!\n오늘의 첫번째 주인공! 신랑님입니다.\n멋지고 늠름하고 잘생긴! 오늘의 신랑이 힘차게 입장할 때,\n하객 여러분들께서는 뜨거운 박수와 환호로 함께 해주시길 바랍니다. 신랑! 입장!` },
+  { id:'bride_entrance', title:'신부 입장', required:true, subType:'bride' },
+  { id:'bow', title:'맞절', required:true, duration:1, description:'하객분들을 모시고 신랑과 신부가 서로에게 예를 갖추어 인사하며 부부로서의 첫 인사를 나누는 순서입니다. 장난스러운 인사보다는, 예를 갖추어 인사하는 것을 추천드려요!', ment:`이제 두 사람이 하객분들 앞에서 처음으로 인사를 나누기 위해 서로를 마주보시고 서시겠습니다.\n오늘로써 새로운 시작을 위해 마주본 우리 두 사람인데요.\n두 분께서는 애틋했던 마음과, 사랑하는 마음 가득 담아 맞절하시겠습니다.\n신랑신부, 맞절` },
+  { id:'vow', title:'혼인서약', required:false, defaultChecked:true, duration:2, description:'많은 분들 앞에서 서로에게 사랑을 약속하는 시간입니다. 주로 신랑 신부가 직접 낭독합니다.\n\n신랑 신부님의 목소리를 직접 들을 수 있는 유일한 순서인만큼 꼭 진행하시는 것을 사회자가 추천드립니다!', ment:`다음은 두 사람의 목소리를 들어보도록 하겠습니다. 혼인서약이 있겠는데요.\n신랑 신부님은 준비가 되시면 낭독 부탁드릴게요!` },
+  { id:'flower_girl', title:'화동', required:false, duration:2, description:'아이들이나 반려동물이 반지를 전달하여 예식에 활기를 더하는 순서입니다.', ment:`이어서 두 사람의 약속을, 빛나는 반지로 다시 한 번 약속해보도록 하겠습니다.\n예물은 아주 특별한 친구가 전해줄텐데요! 뒤를 바라봐주실까요?\n신랑신부님과 정말 오랫동안 많은 시간과 추억을 함께 한, (화동/화견) 가 전해주도록 하겠습니다!\n(화동/화견)이! 입장해주세요!!` },
+  { id:'ring', title:'예물교환', required:false, duration:1, description:'서로의 손에 반지를 끼워주며 영원한 사랑을 약속합니다.', ment:`다음은 두 분만큼이나 빛나는 예물 교환이 있겠습니다.\n먼저 신랑님께서. 신부님께. 사랑하는 마음 담아 끼워주시겠습니다!\n이어서 신부님께서도 신랑님께, 방금 하셨던 그 약속을 되새기시며 끼워주시도록 할게요!` },
+  { id:'declaration', title:'성혼선언', required:true, subType:'declaration' },
+  { id:'parents_words', title:'부모님 덕담', required:false, subType:'parents_words' },
+  { id:'speech', title:'축사', required:false, subType:'speech' },
+  { id:'song', title:'축가', required:false, subType:'song' },
+  { id:'parents_video', title:'부모님 감사영상', required:false, duration:3, description:'부모님께 드리는 감사의 마음을 영상에 담아 상영합니다.', ment:`부모님께 인사드리기 전에, 영상이 한 편 준비가 되어있고 합니다.\n여러분들 앞/옆쪽에 있는 스크린으로 함께 감상하시겠습니다.` },
+  { id:'greeting', title:'부모님, 하객께 인사', required:true, duration:3, description:'양가 부모님과 찾아주신 하객들께 감사의 인사를 올리는 경건한 시간입니다.', ment:`많은 사랑으로 키워주신 양가 부모님께 인사드리는 시간 갖도록 할텐데요.\n먼저 신부의 부모님을 향해 서시겠습니다.\n저희 두 사람. 행복하고 예쁘게 살아가는 모습 보여드리겠습니다.\n신랑신부, 부모님께 인사!\n\n이제 신랑신부는 신랑의 부모님을 향해 서시겠습니다.\n성실한 모습으로 잘 살아가겠습니다.\n신랑신부, 부모님께 인사!\n-\n이제 신랑신부는 하객 여러분을 향해 서시겠습니다.\n오늘 신랑과 신부의 새로운 시작을 축하해주시기 위해서 이렇게나 많이 찾아주셨습니다.\n소중한 걸음해주신 하객 여러분들께 감사의 의미를 담아 인사드리겠습니다.\n신랑신부, 하객 여러분께 감사의 인사!` },
+  { id:'march', title:'행진', required:true, duration:2, description:'부부로서의 첫걸음을 내딛는 순간입니다. 가장 큰 박수가 필요한 하이라이트입니다.', ment:`이제 두 사람이 모든 순서를 마치고 결혼식의 마지막인 행진을 준비하겠습니다.\n부부가 된 우리 두 사람이 내딛는 첫번째 발걸음. 행진입니다.\n하객 여러분들께서는 아낌 없는 박수와 환호를 마음껏! 보내주시길 바랍니다.\n신랑 신부, 행진!` },
+  { id:'closing', title:'폐식사', required:true, duration:1, description:'예식의 종료를 알리고 사진 촬영 및 연회장 안내를 진행합니다.', ment:`이것으로 신랑 (신랑) 군과 신부 (신부) 양의 행복 가득했던 결혼식 모두 마치겠습니다.\n바쁘신 와중에도 참석해주신 여러분들께 다시 한 번 감사드립니다.\n\n사진촬영은 가족, 친지 및 지인과 직장동료 순으로 진행됩니다. 잠시만 자리해주시면 감사하겠습니다.\n촬영 후에는 연회장으로 이동하셔서, 양가에서 마련한 식사 하시면서 오랫동안 함께 해주시길 바랍니다. 저는 사회자 이용진이었습니다. 고맙습니다.` },
+];
+
+// ── 헬퍼 ─────────────────────────────────────────────────────
+function getSubCurrent(c){ if(!c.subType) return null; return subDataMap[c.subType][subOptions[c.subType]]; }
+function getItemDuration(c){ const s=getSubCurrent(c); return s?s.duration:c.duration; }
+function getDescription(c){ const s=getSubCurrent(c); return s?s.description:c.description; }
+function getMent(c){ const s=getSubCurrent(c); return s?s.ment:c.ment; }
+function getCopyTitle(c){
+  if(c.subType&&subCopyLabel[c.subType]){
+    const l=subCopyLabel[c.subType][subOptions[c.subType]];
+    return l?`${c.title} (${l})`:c.title;
+  }
+  return c.title;
+}
+function getCurrentSubLabel(c){
+  if(!c.subType||!subCopyLabel[c.subType]) return '';
+  return subCopyLabel[c.subType][subOptions[c.subType]]||'';
+}
+
+// ── 상단 바 업데이트 ─────────────────────────────────────────
+function updateOrderBar(){
+  const bar = document.getElementById('orderBar');
+  let activeIdx = 0;
+  let html = '';
+
+  ceremonies.forEach((c, i) => {
+    const cb = document.getElementById('cb_'+c.id);
+    const isActive = cb && cb.checked;
+    const name = chipName[c.id] || c.title;
+
+    if(isActive) activeIdx++;
+
+    const pillClass = isActive ? 'active' : 'inactive';
+    const numStr = isActive ? String(activeIdx).padStart(2,'0') : '·';
+
+    html += `<div class="order-node">`;
+    html += `<div class="order-pill ${pillClass}">`;
+    html += `<span class="pill-num">${numStr}</span>`;
+    html += `<span class="pill-name">${name}</span>`;
+    html += `</div>`;
+    if(i < ceremonies.length - 1){
+      html += `<span class="order-arrow${isActive ? '' : ' dim'}">›</span>`;
+    }
+    html += `</div>`;
+  });
+
+  bar.innerHTML = html;
+}
+
+// ── 시간 계산 ─────────────────────────────────────────────────
+const TIME_LIMIT = 30;
+let warningShown = false;
+function calcTotal(){
+  let total=0;
+  ceremonies.forEach(c=>{ const cb=document.getElementById('cb_'+c.id); if(cb&&cb.checked) total+=getItemDuration(c); });
+  const el=document.getElementById('totalTime');
+  el.textContent=total+'분';
+  el.classList.toggle('over-limit', total>TIME_LIMIT);
+  if(total>TIME_LIMIT&&!warningShown){ warningShown=true; showWarning(); }
+  if(total<=TIME_LIMIT) warningShown=false;
+  ceremonies.forEach(c=>{ const d=document.getElementById('dur_'+c.id); if(d) d.textContent=getItemDuration(c)+'분'; });
+  updateOrderBar();
+}
+function showWarning(){ document.getElementById('warningOverlay').classList.add('show'); }
+function closeWarning(){ document.getElementById('warningOverlay').classList.remove('show'); }
+
+// ── 전체 선택 ─────────────────────────────────────────────────
+let allOptionalSelected=false;
+function toggleSelectAll(){
+  allOptionalSelected=!allOptionalSelected;
+  ceremonies.filter(c=>!c.required).forEach(c=>{
+    const cb=document.getElementById('cb_'+c.id);
+    const item=document.getElementById('item_'+c.id);
+    if(cb){ cb.checked=allOptionalSelected; item.classList.toggle('unchecked',!allOptionalSelected); }
+  });
+  document.getElementById('selectAllBtn').textContent=allOptionalSelected?'선택 항목 전체 해제':'선택 항목 전체 선택';
+  calcTotal();
+}
+
+// ── 서브옵션 토글 (접힘/펼침) ────────────────────────────────
+function toggleSubOption(subType){
+  const section=document.getElementById('sub_'+subType);
+  if(!section) return;
+  section.classList.toggle('open');
+}
+
+// ── 서브옵션 값 변경 ─────────────────────────────────────────
+function setSubOption(subType, value){
+  subOptions[subType]=value;
+  const c=ceremonies.find(x=>x.subType===subType);
+  if(!c) return;
+  const sub=subDataMap[subType][value];
+  const descEl=document.getElementById('desc_'+c.id);
+  const mentEl=document.getElementById('ment_'+c.id);
+  if(descEl) descEl.textContent=sub.description;
+  if(mentEl) mentEl.textContent=sub.ment;
+  const curEl=document.getElementById('subcur_'+subType);
+  if(curEl) curEl.textContent=getCurrentSubLabel(c);
+  calcTotal();
+}
+
+// ── 서브옵션 HTML (접힘형) ───────────────────────────────────
+function buildSubOption(c){
+  const configs={
+    candle:{ label:'방식', options:[
+      {value:'mothers',title:'양가 어머님 화촉점화',desc:'양가 어머님 두 분께서 입장하시어 화촉을 밝혀주십니다. (약 3분)'},
+      {value:'parents',title:'양가 부모님 리마인드 입장 후 화촉점화',desc:'양가 부모님 네 분께서 함께 입장하시어 화촉을 밝혀주십니다. (약 4분)'}
+    ]},
+    bride:{ label:'방식', options:[
+      {value:'father',title:'아버님과 함께 입장',desc:'아버님께서 신부를 에스코트하시며 신랑에게 인도해주시는 형식입니다. (약 3분)'},
+      {value:'solo',title:'단독 입장',desc:'신부님께서 홀로 당당하게 입장하시는 방식입니다. 최근 선택하시는 분들이 늘고 있습니다. (약 3분)'}
+    ]},
+    declaration:{ label:'방식', options:[
+      {value:'emcee',title:'사회자가 낭독',desc:'사회자가 성혼선언문을 대독합니다. (약 1분)'},
+      {value:'parents',title:'양가 부모님 중 한 분께서 낭독',desc:'양가 부모님 중 한 분께서 직접 성혼선언문을 낭독해주십니다. (약 1분)'}
+    ]},
+    parents_words:{ label:'인원', options:[
+      {value:'one',title:'양가 중 한 분만',desc:'양가 부모님 중 한 분께서 덕담을 전해주십니다. (약 3분)'},
+      {value:'both',title:'양가 각 한 분씩 (두 분)',desc:'양가 부모님 각각 한 분씩 두 분께서 덕담을 전해주십니다. (약 5분)'}
+    ]},
+    speech:{ label:'인원', options:[
+      {value:'one',title:'한 분',desc:'지인 한 분께서 축사를 전해주십니다. (약 3분)'},
+      {value:'two',title:'두 분',desc:'지인 두 분께서 차례로 축사를 전해주십니다. (약 5분)'}
+    ]},
+    song:{ label:'곡수', options:[
+      {value:'one',title:'한 곡',desc:'축가 한 곡이 준비되어 있습니다. (약 3분)'},
+      {value:'two',title:'두 곡',desc:'축가 두 곡이 준비되어 있습니다. (약 5분)'}
+    ]},
+  };
+
+  if(!c.subType||!configs[c.subType]) return '';
+  const cfg=configs[c.subType];
+  const defaultVal=subOptions[c.subType];
+  const currentLabel=getCurrentSubLabel(c);
+
+  const radios=cfg.options.map(opt=>`
+    <label class="radio-item">
+      <input type="radio" name="${c.subType}" value="${opt.value}" ${opt.value===defaultVal?'checked':''} onchange="setSubOption('${c.subType}','${opt.value}')">
+      <div class="radio-item-text">
+        <span class="radio-item-title">${opt.title}</span>
+        <span class="radio-item-desc">${opt.desc}</span>
+      </div>
+    </label>`).join('');
+
+  return `
+  <div class="sub-option-section" id="sub_${c.subType}" onclick="event.stopPropagation()">
+    <div class="sub-option-header" onclick="toggleSubOption('${c.subType}')">
+      <div class="sub-option-header-left">
+        <span class="sub-option-type">${cfg.label}</span>
+        <span class="sub-option-current" id="subcur_${c.subType}">${currentLabel}</span>
+      </div>
+      <span class="sub-option-toggle-icon">▼</span>
+    </div>
+    <div class="sub-option-body">
+      <div class="radio-group">${radios}</div>
+    </div>
+  </div>`;
+}
+
+// ── 렌더링 ───────────────────────────────────────────────────
+function renderCeremonies(){
+  const list=document.getElementById('ceremonyList');
+  list.innerHTML='';
+  ceremonies.forEach((c,i)=>{
+    const isChecked=(c.required&&!c.skippable)?true:(c.defaultChecked===true);
+    const item=document.createElement('div');
+    let cls='ceremony-item';
+    if(c.skippable) cls+=' skippable-item';
+    else if(!c.required) cls+=' optional-item';
+    if(!isChecked) cls+=' unchecked';
+    item.className=cls; item.id='item_'+c.id;
+    const skipNotice=c.skippable?`<div class="skip-notice">💡 부모님이 안 계시거나 생략이 필요한 경우 체크를 해제하세요.</div>`:'';
+    item.innerHTML=`
+      <div class="ceremony-header" onclick="toggleDetail('${c.id}')">
+        <span class="step-number">${String(i+1).padStart(2,'0')}</span>
+        <div class="checkbox-wrap" onclick="event.stopPropagation()">
+          <input type="checkbox" id="cb_${c.id}" ${isChecked?'checked':''} ${(c.required&&!c.skippable)?'disabled':''} onchange="onCheck('${c.id}')">
+          <div class="checkbox-custom"></div>
+        </div>
+        <span class="required-badge ${c.required?'req':'opt'}">${c.required?'필수':'선택'}</span>
+        <span class="ceremony-title">${c.title}</span>
+        <span class="ceremony-duration" id="dur_${c.id}">${getItemDuration(c)}분</span>
+        <span class="expand-icon">▼</span>
+      </div>
+      ${buildSubOption(c)}
+      <div class="ceremony-detail"><div class="detail-inner">
+        ${skipNotice}
+        <div class="detail-section"><div class="detail-section-title">순서 설명</div><div class="detail-section-content" id="desc_${c.id}">${getDescription(c)}</div></div>
+        <div class="detail-section"><div class="detail-section-title">멘트 예시</div><div class="ment-box" id="ment_${c.id}">${getMent(c)}</div></div>
+      </div></div>`;
+    list.appendChild(item);
+  });
+  calcTotal();
+}
+
+function toggleDetail(id){ document.getElementById('item_'+id).classList.toggle('expanded'); }
+function onCheck(id){
+  const cb=document.getElementById('cb_'+id);
+  document.getElementById('item_'+id).classList.toggle('unchecked',!cb.checked);
+  calcTotal();
+}
+
+// ── 복사 ─────────────────────────────────────────────────────
+function copySchedule(){
+  const checked=ceremonies.filter(c=>{ const cb=document.getElementById('cb_'+c.id); return cb&&cb.checked; });
+  const text='📋 결혼식 식순\n\n'+checked.map((c,i)=>`${String(i+1).padStart(2,'0')}. ${getCopyTitle(c)}`).join('\n')+'\n\n@wedding_yong 사회자 이용진';
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>showToast('✓  식순이 복사되었습니다!')).catch(()=>fallbackCopy(text));
+  else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;top:-9999px;left:-9999px;';
+  document.body.appendChild(ta); ta.focus(); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta);
+  showToast('✓  식순이 복사되었습니다!');
+}
+
+// ── 공유 ─────────────────────────────────────────────────────
+function openShareModal(){ document.getElementById('shareUrlText').textContent=window.location.href; document.getElementById('shareOverlay').classList.add('show'); }
+function closeShareModal(){ document.getElementById('shareOverlay').classList.remove('show'); }
+function handleOverlayClick(e){ if(e.target===document.getElementById('shareOverlay')) closeShareModal(); }
+function shareKakao(){
+  if(navigator.share) navigator.share({title:'결혼식 식순 빌더 — 사회자 이용진',url:window.location.href}).then(()=>closeShareModal()).catch(()=>{});
+  else{ window.open('https://story.kakao.com/share?url='+encodeURIComponent(window.location.href),'_blank'); closeShareModal(); }
+}
+function shareSMS(){
+  const sep=/iPhone|iPad|iPod/.test(navigator.userAgent)?'&':'?';
+  window.location.href='sms:'+sep+'body='+encodeURIComponent('결혼식 식순 빌더 링크를 공유합니다 :)\n'+window.location.href);
+  closeShareModal();
+}
+function shareLink(){
+  const url=window.location.href;
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(()=>{ closeShareModal(); showToast('🔗  링크가 복사되었습니다!'); }).catch(()=>fallbackCopyText(url));
+  else fallbackCopyText(url);
+}
+function fallbackCopyText(text){
+  const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;top:-9999px;left:-9999px;';
+  document.body.appendChild(ta); ta.focus(); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta);
+  closeShareModal(); showToast('🔗  링크가 복사되었습니다!');
+}
+function shareNative(){
+  if(navigator.share) navigator.share({title:'결혼식 식순 빌더 — 사회자 이용진',url:window.location.href}).then(()=>closeShareModal()).catch(()=>{});
+  else shareLink();
+}
+
+let toastTimer=null;
+function showToast(msg){
+  const toast=document.getElementById('toast'); toast.textContent=msg;
+  if(toastTimer) clearTimeout(toastTimer); toast.classList.add('show');
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),2300);
+}
+
+renderCeremonies();
+</script>
+</body>
+</html>
