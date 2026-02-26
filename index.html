@@ -25,20 +25,18 @@
 
   /* ── 인트로 페이지 ── */
   #introPage {
-position: fixed;
-  inset: 0;
-  background: var(--charcoal);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* justify-content: center; 를 제거하거나 flex-start로 변경 */
-  justify-content: flex-start; 
-  padding: 60px 24px 80px; /* 상단 패딩을 넉넉히 주어 제목 노출 보장 */
-  overflow-y: auto;
-  transition: opacity 0.55s ease, transform 0.55s ease;
-  /* 모바일에서 스크롤이 부드럽게 되도록 추가 */
-  -webkit-overflow-scrolling: touch;
+    position: fixed;
+    inset: 0;
+    background: var(--charcoal);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 60px 24px 80px;
+    overflow-y: auto;
+    transition: opacity 0.55s ease, transform 0.55s ease;
+    -webkit-overflow-scrolling: touch;
   }
   #introPage.hide {
     opacity: 0;
@@ -99,18 +97,6 @@ position: fixed;
     word-break: keep-all;
     text-align: left;
   }
-  .intro-cheer {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-style: italic;
-    color: var(--gold-light);
-    letter-spacing: 0.5px;
-    margin: 24px 0 32px;
-    display: block;
-    text-align: center;
-  }
-
-  /* 드리는 말씀 카드 */
   .intro-notice {
     background: rgba(255,255,255,0.038);
     border: 1px solid rgba(201,169,110,0.18);
@@ -153,8 +139,6 @@ position: fixed;
     font-size: 10px;
     top: 3px;
   }
-
-  /* 시작 버튼 */
   .intro-start-btn {
     width: 100%;
     background: var(--gold);
@@ -175,30 +159,206 @@ position: fixed;
     gap: 10px;
   }
   .intro-start-btn:active { background: var(--gold-dark); transform: scale(0.99); }
-  .intro-start-arrow {
-    font-size: 16px;
-    transition: transform 0.22s;
-    display: inline-block;
-  }
+  .intro-start-arrow { font-size: 16px; transition: transform 0.22s; display: inline-block; }
   .intro-start-btn:hover .intro-start-arrow { transform: translateX(5px); }
-
   .intro-insta-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 20px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 14px;
-    font-style: italic;
-    color: rgba(201,169,110,0.5);
-    text-decoration: none;
-    letter-spacing: 0.5px;
-    transition: color 0.2s;
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 20px;
+    font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic;
+    color: rgba(201,169,110,0.5); text-decoration: none; letter-spacing: 0.5px; transition: color 0.2s;
   }
   .intro-insta-link:hover { color: var(--gold); }
   .intro-insta-icon { width: 14px; height: 14px; stroke: currentColor; }
 
-  /* ── 메인 앱 (초기엔 숨김) ── */
+  /* ── 분위기 선택 오버레이 (작고 깔끔하게) ── */
+  #moodOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(44,40,37,0.75);
+    z-index: 9998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.25s ease both;
+  }
+  #moodOverlay.visible { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .mood-box {
+    background: var(--charcoal);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 12px;
+    padding: 28px 24px 24px;
+    width: 100%;
+    max-width: 340px;
+    animation: scaleIn 0.25s cubic-bezier(0.34,1.4,0.64,1) both;
+  }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
+
+  .mood-box-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.8;
+    display: block;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .mood-box-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--warm-white);
+    text-align: center;
+    line-height: 1.55;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+  .mood-box-heading strong {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .mood-box-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.32);
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 0.2px;
+  }
+
+  /* 체크박스 목록 */
+  .mood-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 20px;
+  }
+  .mood-check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .mood-check-item:hover { background: rgba(255,255,255,0.04); }
+  .mood-check-item:active { background: rgba(201,169,110,0.08); }
+
+  .mood-check-box {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 11px;
+    color: transparent;
+  }
+  .mood-check-item.checked .mood-check-box {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--charcoal);
+  }
+
+  .mood-check-label {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.5px;
+    transition: color 0.15s;
+  }
+  .mood-check-item.checked .mood-check-label {
+    color: var(--warm-white);
+  }
+
+  .mood-confirm-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--charcoal);
+    border: none;
+    border-radius: 4px;
+    padding: 14px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .mood-confirm-btn:active { background: var(--gold-dark); }
+  .mood-skip-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    padding: 4px;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    font-family: 'Noto Serif KR', serif;
+    width: 100%;
+  }
+  .mood-skip-link:hover { color: rgba(255,255,255,0.38); }
+
+  /* ── 분위기 배너 (메인 앱 스티키) ── */
+  .mood-banner {
+    background: rgba(201,169,110,0.06);
+    border-bottom: 1px solid rgba(201,169,110,0.15);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 36px;
+  }
+  .mood-banner-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.7;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .mood-banner-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex: 1;
+  }
+  .mood-banner-tag {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.3px;
+    background: rgba(201,169,110,0.12);
+    border: 1px solid rgba(201,169,110,0.25);
+    border-radius: 20px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .mood-banner-empty {
+    font-size: 12px;
+    color: rgba(122,112,104,0.5);
+    font-style: italic;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── 메인 앱 ── */
   #mainApp {
     opacity: 0;
     transition: opacity 0.5s ease 0.1s;
@@ -216,78 +376,28 @@ position: fixed;
   .header-divider { width: 50px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 14px auto; }
   .header-sub { color: var(--gold-light); font-size: 12px; letter-spacing: 0.5px; font-weight: 300; position: relative; line-height: 1.6; padding: 0 8px; }
 
-  /* ── 스티키 상단 전체 ── */
   .sticky-top { position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 14px rgba(44,40,37,0.22); }
 
-  /* ── 타이머 바 ── */
   .timer-bar { background: var(--gold); padding: 9px 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
   .timer-label { font-size: 12px; color: var(--charcoal); letter-spacing: 0.5px; }
   .timer-value { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--charcoal); min-width: 52px; text-align: center; transition: color 0.3s; }
   .timer-value.over-limit { color: #c0392b; }
   .timer-note { font-size: 10px; color: rgba(44,40,37,0.5); letter-spacing: 0.3px; }
 
-  /* ── 식순 전체 표시 바 ── */
-  .order-bar {
-    background: var(--charcoal);
-    padding: 8px 12px 9px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 3px;
-    align-items: center;
-  }
-
-  .order-node {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-  }
-
-  /* 항목 pill */
-  .order-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 3px 7px;
-    border-radius: 20px;
-    transition: all 0.2s;
-    line-height: 1;
-  }
-  .order-pill.active {
-    background: rgba(201,169,110,0.22);
-    border: 1px solid rgba(201,169,110,0.45);
-  }
-  .order-pill.inactive {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-  .pill-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 9px;
-    font-style: italic;
-    line-height: 1;
-  }
+  .order-bar { background: var(--charcoal); padding: 8px 12px 9px; display: flex; flex-wrap: wrap; gap: 4px 3px; align-items: center; }
+  .order-node { display: inline-flex; align-items: center; gap: 3px; }
+  .order-pill { display: inline-flex; align-items: center; gap: 3px; padding: 3px 7px; border-radius: 20px; transition: all 0.2s; line-height: 1; }
+  .order-pill.active { background: rgba(201,169,110,0.22); border: 1px solid rgba(201,169,110,0.45); }
+  .order-pill.inactive { background: transparent; border: 1px solid rgba(255,255,255,0.1); }
+  .pill-num { font-family: 'Cormorant Garamond', serif; font-size: 9px; font-style: italic; line-height: 1; }
   .order-pill.active .pill-num { color: var(--gold); }
   .order-pill.inactive .pill-num { color: rgba(255,255,255,0.2); }
-
-  .pill-name {
-    font-size: 10px;
-    letter-spacing: 0.1px;
-    line-height: 1;
-  }
+  .pill-name { font-size: 10px; letter-spacing: 0.1px; line-height: 1; }
   .order-pill.active .pill-name { color: rgba(255,255,255,0.9); }
   .order-pill.inactive .pill-name { color: rgba(255,255,255,0.22); }
-
-  /* 화살표 */
-  .order-arrow {
-    font-size: 8px;
-    color: rgba(201,169,110,0.3);
-    line-height: 1;
-    margin: 0 1px;
-  }
-  /* 비활성 화살표 */
+  .order-arrow { font-size: 8px; color: rgba(201,169,110,0.3); line-height: 1; margin: 0 1px; }
   .order-arrow.dim { color: rgba(255,255,255,0.1); }
 
-  /* ── 컨트롤 행 ── */
   .controls-row { background: var(--warm-white); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .legend { display: flex; gap: 14px; }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--warm-gray); }
@@ -299,12 +409,9 @@ position: fixed;
 
   .main { max-width: 680px; margin: 0 auto; padding: 14px 12px 12px; }
 
-  /* ── 식순 카드 ── */
   .ceremony-item { background: var(--warm-white); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 7px; transition: opacity 0.2s; overflow: hidden; }
   .ceremony-item.optional-item { background: #f7f4f0; }
-  .ceremony-item.optional-item.unchecked,
-  .ceremony-item.skippable-item.unchecked { opacity: 0.52; }
-
+  .ceremony-item.optional-item.unchecked, .ceremony-item.skippable-item.unchecked { opacity: 0.52; }
   .ceremony-header { display: flex; align-items: center; padding: 13px 14px; cursor: pointer; gap: 10px; user-select: none; min-height: 52px; }
   .step-number { font-family: 'Cormorant Garamond', serif; font-size: 11px; color: var(--warm-gray); min-width: 18px; font-style: italic; flex-shrink: 0; }
   .checkbox-wrap { position: relative; width: 22px; height: 22px; flex-shrink: 0; }
@@ -320,8 +427,6 @@ position: fixed;
   .ceremony-duration { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--warm-gray); font-style: italic; flex-shrink: 0; }
   .expand-icon { color: var(--gold); font-size: 9px; transition: transform 0.3s ease; flex-shrink: 0; margin-left: 2px; }
   .ceremony-item.expanded .expand-icon { transform: rotate(180deg); }
-
-  /* 상세 패널 */
   .ceremony-detail { display: none; border-top: 1px solid var(--border); background: var(--cream); }
   .ceremony-item.expanded .ceremony-detail { display: block; animation: slideDown 0.25s ease; }
   @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
@@ -333,68 +438,16 @@ position: fixed;
   .ment-box { background: white; border-left: 2px solid var(--gold); padding: 12px 14px; font-size: 13px; line-height: 1.85; color: var(--charcoal); font-style: italic; border-radius: 0 2px 2px 0; white-space: pre-line; }
   .skip-notice { background: rgba(201,169,110,0.08); border: 1px dashed rgba(201,169,110,0.4); border-radius: 4px; padding: 9px 12px; font-size: 12px; color: var(--warm-gray); line-height: 1.6; margin-bottom: 14px; }
 
-  /* ── 서브옵션 (접힘/펼침) ── */
-  .sub-option-section {
-    border-top: 1px solid var(--border);
-    background: rgba(201,169,110,0.04);
-  }
-
-  /* 서브옵션 헤더 (항상 보임) */
-  .sub-option-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 9px 14px 9px 54px;
-    cursor: pointer;
-    user-select: none;
-    gap: 8px;
-  }
+  .sub-option-section { border-top: 1px solid var(--border); background: rgba(201,169,110,0.04); }
+  .sub-option-header { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px 9px 54px; cursor: pointer; user-select: none; gap: 8px; }
   .sub-option-header:active { background: rgba(201,169,110,0.08); }
-
-  .sub-option-header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-  }
-  .sub-option-type {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--gold);
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-  /* 현재 선택값 표시 */
-  .sub-option-current {
-    font-size: 12px;
-    color: var(--charcoal);
-    background: rgba(201,169,110,0.12);
-    border: 1px solid rgba(201,169,110,0.3);
-    border-radius: 12px;
-    padding: 2px 9px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 160px;
-    letter-spacing: 0.2px;
-  }
-  .sub-option-toggle-icon {
-    font-size: 9px;
-    color: var(--gold);
-    transition: transform 0.25s ease;
-    flex-shrink: 0;
-  }
+  .sub-option-header-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .sub-option-type { font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); flex-shrink: 0; white-space: nowrap; }
+  .sub-option-current { font-size: 12px; color: var(--charcoal); background: rgba(201,169,110,0.12); border: 1px solid rgba(201,169,110,0.3); border-radius: 12px; padding: 2px 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; letter-spacing: 0.2px; }
+  .sub-option-toggle-icon { font-size: 9px; color: var(--gold); transition: transform 0.25s ease; flex-shrink: 0; }
   .sub-option-section.open .sub-option-toggle-icon { transform: rotate(180deg); }
-
-  /* 라디오 패널 (접힘/펼침) */
-  .sub-option-body {
-    display: none;
-    padding: 0 14px 12px 54px;
-  }
+  .sub-option-body { display: none; padding: 0 14px 12px 54px; }
   .sub-option-section.open .sub-option-body { display: block; animation: slideDown 0.2s ease; }
-
   .radio-group { display: flex; flex-direction: column; gap: 6px; }
   .radio-item { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); transition: all 0.18s; background: white; }
   .radio-item:has(input:checked) { border-color: var(--gold); background: rgba(201,169,110,0.07); }
@@ -404,7 +457,6 @@ position: fixed;
   .radio-item-title { font-size: 13px; color: var(--charcoal); font-weight: 400; letter-spacing: 0.2px; }
   .radio-item-desc { font-size: 11px; color: var(--warm-gray); line-height: 1.6; font-weight: 300; }
 
-  /* ── 액션 버튼 ── */
   .action-section { padding: 4px 12px 20px; max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
   .copy-btn { width: 100%; background: var(--charcoal); color: var(--gold-light); border: none; border-radius: 4px; padding: 16px; font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; transition: background 0.2s; }
   .copy-btn:active { background: #1a1614; }
@@ -417,7 +469,6 @@ position: fixed;
   .insta-consult-btn-main { font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
   .insta-consult-btn-sub { font-size: 11px; opacity: 0.88; letter-spacing: 0.3px; }
 
-  /* ── 공유 모달 ── */
   .modal-overlay { position: fixed; inset: 0; background: rgba(44,40,37,0.6); z-index: 9000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
   .modal-overlay.show { opacity: 1; pointer-events: all; }
   .share-modal { background: var(--warm-white); border-radius: 16px 16px 0 0; padding: 28px 20px 40px; width: 100%; max-width: 680px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); }
@@ -468,18 +519,15 @@ position: fixed;
   <div class="intro-wrap">
     <span class="intro-ornament">Wedding Ceremony</span>
     <div class="intro-logo-divider"></div>
-
     <div class="intro-greeting">안녕하세요,<br>사회자 이용진입니다.</div>
     <span class="intro-name-tag">@wedding_yong</span>
-
     <p class="intro-desc">
       '혼인서약과 성혼선언이 무슨 차이인가요?'<br>
       '꼭 해야 하나요?'<br>
       '시간이 너무 짧지는 않을까요?'<br><br>
       다른 준비들은 완벽하지만, 정작 가장 중요한 결혼식 당일의 식순에는 어려움을 겪으시는 많은 분들의 모습을 보고 꼭 도움을 드려야겠다 싶었어요.<br><br>
-     차디찬(?) 결혼식 준비 과정에서 <br>조금이나마 따스함을 느끼셨으면 합니다.<br><br>
+      차디찬(?) 결혼식 준비 과정에서 <br>조금이나마 따스함을 느끼셨으면 합니다.<br><br>
     </p>
-
     <div class="intro-notice">
       <span class="intro-notice-title"><center>드리는 말씀</center></span>
       <ul class="intro-notice-list">
@@ -490,12 +538,10 @@ position: fixed;
         <li>무엇보다 '우리가 원하는 분위기'로, '우리답게' 만들어나가시길 바랄게요!</li>
       </ul>
     </div>
-
-    <button class="intro-start-btn" onclick="startBuilder()">
+    <button class="intro-start-btn" onclick="goToMood()">
       식순 빌더 시작하기
       <span class="intro-start-arrow">→</span>
     </button>
-
     <a href="https://www.instagram.com/wedding_yong/" target="_blank" class="intro-insta-link">
       <svg class="intro-insta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -504,6 +550,22 @@ position: fixed;
       </svg>
       @wedding_yong
     </a>
+  </div>
+</div>
+
+<!-- ── 분위기 선택 오버레이 ── -->
+<div id="moodOverlay">
+  <div class="mood-box">
+    <span class="mood-box-title">잠깐!</span>
+    <div class="mood-box-heading">식순보다 중요한,<br><strong>'우리가 원하는 분위기'</strong>부터<br>꼭 생각해보세요!</div>
+    <p class="mood-box-sub">중복 선택 가능합니다 :)</p>
+    <div class="mood-list" id="moodList">
+      <!-- JS로 렌더링 -->
+    </div>
+    <button class="mood-confirm-btn" onclick="confirmMood()">
+      식순 구성 시작하기 →
+    </button>
+    <button class="mood-skip-link" onclick="confirmMood()">선택 없이 시작하기</button>
   </div>
 </div>
 
@@ -518,14 +580,15 @@ position: fixed;
 </div>
 
 <div class="sticky-top">
+  <!-- 분위기 배너 -->
+  <div class="mood-banner" id="moodBanner"></div>
+
   <div class="timer-bar">
     <span class="timer-label">예상 소요시간</span>
     <span class="timer-value" id="totalTime">00분</span>
     <span class="timer-note">선택 시 자동 계산</span>
   </div>
-  <div class="order-bar" id="orderBar">
-    <!-- JS로 렌더링 -->
-  </div>
+  <div class="order-bar" id="orderBar"></div>
 </div>
 
 <div class="controls-row">
@@ -603,21 +666,70 @@ position: fixed;
 <div class="toast" id="toast"></div>
 
 <script>
-// ── 인트로 → 빌더 전환 ──────────────────────────────────────
-function startBuilder(){
-  const intro = document.getElementById('introPage');
-  const main  = document.getElementById('mainApp');
-  intro.classList.add('hide');
-  main.classList.add('visible');
-  // 인트로 완전히 사라진 후 DOM에서 제거 (스크롤 영향 없애기)
-  setTimeout(()=>{ intro.style.display='none'; }, 650);
+// ── 분위기 데이터 ──────────────────────────────────────────────
+const MOODS = ['진중','경건','우아','깔끔','따뜻','위트','유쾌'];
+let selectedMoods = new Set();
+
+// ── 분위기 목록 렌더링 ────────────────────────────────────────
+function renderMoodList() {
+  const list = document.getElementById('moodList');
+  list.innerHTML = '';
+  MOODS.forEach(name => {
+    const item = document.createElement('div');
+    item.className = 'mood-check-item' + (selectedMoods.has(name) ? ' checked' : '');
+    item.onclick = () => {
+      if (selectedMoods.has(name)) selectedMoods.delete(name);
+      else selectedMoods.add(name);
+      item.classList.toggle('checked', selectedMoods.has(name));
+    };
+    item.innerHTML = `
+      <div class="mood-check-box">✓</div>
+      <span class="mood-check-label">${name}</span>
+    `;
+    list.appendChild(item);
+  });
 }
 
+// ── 인트로 → 분위기 선택 ─────────────────────────────────────
+function goToMood() {
+  const intro = document.getElementById('introPage');
+  intro.classList.add('hide');
+  setTimeout(() => {
+    intro.style.display = 'none';
+    renderMoodList();
+    document.getElementById('moodOverlay').classList.add('visible');
+  }, 500);
+}
+
+// ── 분위기 확인 → 빌더 시작 ─────────────────────────────────
+function confirmMood() {
+  document.getElementById('moodOverlay').classList.remove('visible');
+  document.getElementById('mainApp').classList.add('visible');
+  updateMoodBanner();
+}
+
+// ── 분위기 배너 업데이트 ─────────────────────────────────────
+function updateMoodBanner() {
+  const banner = document.getElementById('moodBanner');
+  if (selectedMoods.size === 0) {
+    banner.innerHTML = `
+      <span class="mood-banner-label">우리의 분위기</span>
+      <span class="mood-banner-empty">선택된 분위기 없음</span>
+    `;
+  } else {
+    const tags = [...selectedMoods].map(n => `<span class="mood-banner-tag">${n}</span>`).join('');
+    banner.innerHTML = `
+      <span class="mood-banner-label">우리의 분위기</span>
+      <div class="mood-banner-tags">${tags}</div>
+    `;
+  }
+}
+
+// ── 기존 로직 ────────────────────────────────────────────────
 const subOptions = {
   candle:'mothers', bride:'father', declaration:'emcee',
   parents_words:'one', speech:'one', song:'one',
 };
-
 const subCopyLabel = {
   candle:        { mothers:'양가 어머님', parents:'양가 부모님 리마인드' },
   bride:         { father:'아버님과 함께', solo:'단독 입장' },
@@ -626,14 +738,6 @@ const subCopyLabel = {
   speech:        { one:'한 분', two:'두 분' },
   song:          { one:'한 곡', two:'두 곡' },
 };
-
-// 서브옵션 헤더 레이블
-const subTypeLabel = {
-  candle:'방식', bride:'방식', declaration:'방식',
-  parents_words:'인원', speech:'인원', song:'곡수',
-};
-
-// 상단 바용 짧은 이름
 const chipName = {
   opening:'개식사', candle:'화촉점화', intro_video:'소개영상',
   groom_entrance:'신랑입장', bride_entrance:'신부입장', bow:'맞절',
@@ -642,7 +746,6 @@ const chipName = {
   song:'축가', parents_video:'감사영상', greeting:'부모님인사',
   march:'행진', closing:'폐식사',
 };
-
 const subDataMap = {
   candle:{
     mothers:{ duration:3, description:'양가 어머님께서 화합의 촛불(화촉)을 밝혀주시면서 결혼식의 시작을 알립니다.\n\n일반적으로 진행되는 형태입니다.', ment:`오늘의 첫번째 순서, 양가 어머님께서 열어주시겠습니다.\n뒷 쪽을 한 번 바라봐주실까요?\n\n너무나 아름다우신 양가 어머님께서, 손 꼭 잡으시고 입장을 기다리고 계십니다.\n결혼식의 첫번째 순서이기 때문에 많이 떨리실 수 있을텐데요. 두 분 입장해주실 때 따스한 박수로 맞이해주시길 바랍니다.\n양가 어머님, 입장해주십시오!\n\n이제 어머님들께서는 아들딸들의 미래를, 환하게 밝혀주시겠습니다.\n화촉에 점화를 해주실텐데요!\n\n먼저 신랑의 어머님께 부탁드리겠습니다.\n이어서 신부의 어머님께서도 소중한 손길로 밝혀주시겠습니다.\n\n이제 두 분께서는 단상 앞으로 오셔서 서로를 마주보시고 서시겠습니다.\n양가 화합의 의미를 담아, 서로에게 인사 나누시겠습니다. 양가 어머님, 맞절\n\n이어서 하객 여러분들을 향해 서시겠습니다.\n소중한 걸음 해주신 모든 하객 여러분들께도 인사 올리겠습니다. 양가 어머님, 인사\n\n어머님들께서는 편안하게 착석해주시겠습니다.` },
@@ -690,16 +793,12 @@ const ceremonies = [
   { id:'closing', title:'폐식사', required:true, duration:1, description:'결혼식 종료, 사진 촬영 및 연회장 안내를 진행합니다.', ment:`이것으로 신랑 (신랑) 군과 신부 (신부) 양의 행복 가득했던 결혼식 모두 마치겠습니다.\n바쁘신 와중에도 참석해주신 여러분들께 다시 한 번 감사드립니다.\n\n사진촬영은 가족, 친지 및 지인과 직장동료 순으로 진행됩니다. 잠시만 자리해주시면 감사하겠습니다.\n촬영 후에는 연회장으로 이동하셔서, 양가에서 마련한 식사 하시면서 오랫동안 함께 해주시길 바랍니다. 저는 사회자 이용진이었습니다. 고맙습니다.` },
 ];
 
-// ── 헬퍼 ─────────────────────────────────────────────────────
 function getSubCurrent(c){ if(!c.subType) return null; return subDataMap[c.subType][subOptions[c.subType]]; }
 function getItemDuration(c){ const s=getSubCurrent(c); return s?s.duration:c.duration; }
 function getDescription(c){ const s=getSubCurrent(c); return s?s.description:c.description; }
 function getMent(c){ const s=getSubCurrent(c); return s?s.ment:c.ment; }
 function getCopyTitle(c){
-  if(c.subType&&subCopyLabel[c.subType]){
-    const l=subCopyLabel[c.subType][subOptions[c.subType]];
-    return l?`${c.title} (${l})`:c.title;
-  }
+  if(c.subType&&subCopyLabel[c.subType]){ const l=subCopyLabel[c.subType][subOptions[c.subType]]; return l?`${c.title} (${l})`:c.title; }
   return c.title;
 }
 function getCurrentSubLabel(c){
@@ -707,45 +806,31 @@ function getCurrentSubLabel(c){
   return subCopyLabel[c.subType][subOptions[c.subType]]||'';
 }
 
-// ── 상단 바 업데이트 ─────────────────────────────────────────
 function updateOrderBar(){
-  const bar = document.getElementById('orderBar');
-  let activeIdx = 0;
-  let html = '';
-
-  ceremonies.forEach((c, i) => {
-    const cb = document.getElementById('cb_'+c.id);
-    const isActive = cb && cb.checked;
-    const name = chipName[c.id] || c.title;
-
+  const bar=document.getElementById('orderBar');
+  let activeIdx=0, html='';
+  ceremonies.forEach((c,i)=>{
+    const cb=document.getElementById('cb_'+c.id);
+    const isActive=cb&&cb.checked;
+    const name=chipName[c.id]||c.title;
     if(isActive) activeIdx++;
-
-    const pillClass = isActive ? 'active' : 'inactive';
-    const numStr = isActive ? String(activeIdx).padStart(2,'0') : '·';
-
-    html += `<div class="order-node">`;
-    html += `<div class="order-pill ${pillClass}">`;
-    html += `<span class="pill-num">${numStr}</span>`;
-    html += `<span class="pill-name">${name}</span>`;
-    html += `</div>`;
-    if(i < ceremonies.length - 1){
-      html += `<span class="order-arrow${isActive ? '' : ' dim'}">›</span>`;
-    }
-    html += `</div>`;
+    const pillClass=isActive?'active':'inactive';
+    const numStr=isActive?String(activeIdx).padStart(2,'0'):'·';
+    html+=`<div class="order-node"><div class="order-pill ${pillClass}"><span class="pill-num">${numStr}</span><span class="pill-name">${name}</span></div>`;
+    if(i<ceremonies.length-1) html+=`<span class="order-arrow${isActive?'':' dim'}">›</span>`;
+    html+=`</div>`;
   });
-
-  bar.innerHTML = html;
+  bar.innerHTML=html;
 }
 
-// ── 시간 계산 ─────────────────────────────────────────────────
-const TIME_LIMIT = 30;
-let warningShown = false;
+const TIME_LIMIT=30;
+let warningShown=false;
 function calcTotal(){
   let total=0;
   ceremonies.forEach(c=>{ const cb=document.getElementById('cb_'+c.id); if(cb&&cb.checked) total+=getItemDuration(c); });
   const el=document.getElementById('totalTime');
   el.textContent=total+'분';
-  el.classList.toggle('over-limit', total>TIME_LIMIT);
+  el.classList.toggle('over-limit',total>TIME_LIMIT);
   if(total>TIME_LIMIT&&!warningShown){ warningShown=true; showWarning(); }
   if(total<=TIME_LIMIT) warningShown=false;
   ceremonies.forEach(c=>{ const d=document.getElementById('dur_'+c.id); if(d) d.textContent=getItemDuration(c)+'분'; });
@@ -754,7 +839,6 @@ function calcTotal(){
 function showWarning(){ document.getElementById('warningOverlay').classList.add('show'); }
 function closeWarning(){ document.getElementById('warningOverlay').classList.remove('show'); }
 
-// ── 전체 선택 ─────────────────────────────────────────────────
 let allOptionalSelected=false;
 function toggleSelectAll(){
   allOptionalSelected=!allOptionalSelected;
@@ -767,15 +851,12 @@ function toggleSelectAll(){
   calcTotal();
 }
 
-// ── 서브옵션 토글 (접힘/펼침) ────────────────────────────────
 function toggleSubOption(subType){
   const section=document.getElementById('sub_'+subType);
   if(!section) return;
   section.classList.toggle('open');
 }
-
-// ── 서브옵션 값 변경 ─────────────────────────────────────────
-function setSubOption(subType, value){
+function setSubOption(subType,value){
   subOptions[subType]=value;
   const c=ceremonies.find(x=>x.subType===subType);
   if(!c) return;
@@ -789,7 +870,6 @@ function setSubOption(subType, value){
   calcTotal();
 }
 
-// ── 서브옵션 HTML (접힘형) ───────────────────────────────────
 function buildSubOption(c){
   const configs={
     candle:{ label:'방식', options:[
@@ -817,12 +897,10 @@ function buildSubOption(c){
       {value:'two',title:'두 곡',desc:'축가 두 곡이 준비되어 있습니다. (약 5분)'}
     ]},
   };
-
   if(!c.subType||!configs[c.subType]) return '';
   const cfg=configs[c.subType];
   const defaultVal=subOptions[c.subType];
   const currentLabel=getCurrentSubLabel(c);
-
   const radios=cfg.options.map(opt=>`
     <label class="radio-item">
       <input type="radio" name="${c.subType}" value="${opt.value}" ${opt.value===defaultVal?'checked':''} onchange="setSubOption('${c.subType}','${opt.value}')">
@@ -831,7 +909,6 @@ function buildSubOption(c){
         <span class="radio-item-desc">${opt.desc}</span>
       </div>
     </label>`).join('');
-
   return `
   <div class="sub-option-section" id="sub_${c.subType}" onclick="event.stopPropagation()">
     <div class="sub-option-header" onclick="toggleSubOption('${c.subType}')">
@@ -841,13 +918,10 @@ function buildSubOption(c){
       </div>
       <span class="sub-option-toggle-icon">▼</span>
     </div>
-    <div class="sub-option-body">
-      <div class="radio-group">${radios}</div>
-    </div>
+    <div class="sub-option-body"><div class="radio-group">${radios}</div></div>
   </div>`;
 }
 
-// ── 렌더링 ───────────────────────────────────────────────────
 function renderCeremonies(){
   const list=document.getElementById('ceremonyList');
   list.innerHTML='';
@@ -890,10 +964,16 @@ function onCheck(id){
   calcTotal();
 }
 
-// ── 복사 ─────────────────────────────────────────────────────
 function copySchedule(){
   const checked=ceremonies.filter(c=>{ const cb=document.getElementById('cb_'+c.id); return cb&&cb.checked; });
-  const text='📋 결혼식 식순\n\n'+checked.map((c,i)=>`${String(i+1).padStart(2,'0')}. ${getCopyTitle(c)}`).join('\n')+'\n\n@wedding_yong 사회자 이용진';
+  // 분위기 줄 생성
+  const moodLine = selectedMoods.size > 0
+    ? '우리가 원하는 분위기 : ' + [...selectedMoods].map(n=>'#'+n).join(' ') + '\n\n'
+    : '';
+  const text = moodLine
+    + '📋 결혼식 식순\n\n'
+    + checked.map((c,i)=>`${String(i+1).padStart(2,'0')}. ${getCopyTitle(c)}`).join('\n')
+    + '\n\n@wedding_yong 사회자 이용진';
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>showToast('✓  식순이 복사되었습니다!')).catch(()=>fallbackCopy(text));
   else fallbackCopy(text);
 }
@@ -903,7 +983,6 @@ function fallbackCopy(text){
   showToast('✓  식순이 복사되었습니다!');
 }
 
-// ── 공유 ─────────────────────────────────────────────────────
 function openShareModal(){ document.getElementById('shareUrlText').textContent=window.location.href; document.getElementById('shareOverlay').classList.add('show'); }
 function closeShareModal(){ document.getElementById('shareOverlay').classList.remove('show'); }
 function handleOverlayClick(e){ if(e.target===document.getElementById('shareOverlay')) closeShareModal(); }
