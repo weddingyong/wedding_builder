@@ -461,6 +461,8 @@
   .action-section { padding: 4px 12px 20px; max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
   .copy-btn { width: 100%; background: var(--charcoal); color: var(--gold-light); border: none; border-radius: 4px; padding: 16px; font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; transition: background 0.2s; }
   .copy-btn:active { background: #1a1614; }
+  .script-btn { background: #3a4a3a; color: #b8d4a8; }
+  .script-btn:active { background: #2a3a2a; }
   .share-btn { width: 100%; background: var(--warm-white); color: var(--gold-dark); border: 1.5px solid var(--gold); border-radius: 4px; padding: 16px; font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; -webkit-appearance: none; transition: all 0.2s; }
   .share-btn:active { background: rgba(201,169,110,0.12); }
   .insta-consult-btn { width: 100%; background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color: white; border: none; border-radius: 4px; padding: 16px; font-family: 'Noto Serif KR', serif; font-size: 15px; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; -webkit-appearance: none; transition: opacity 0.2s; text-decoration: none; }
@@ -604,6 +606,7 @@
 
 <div class="action-section">
   <button class="copy-btn" onclick="copySchedule()"><span>📋</span> 식순 복사하기</button>
+  <button class="copy-btn script-btn" onclick="downloadScript()"><span>📄</span> 대본 샘플 추출하기 (.xlsx)</button>
   <button class="share-btn" onclick="openShareModal()"><span>🔗</span> 링크 공유하기</button>
   <a class="insta-consult-btn" href="https://www.instagram.com/wedding_yong/" target="_blank">
     <svg class="insta-consult-btn-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1019,6 +1022,76 @@ function showToast(msg){
 }
 
 renderCeremonies();
+
+// ── SheetJS 로드 ─────────────────────────────────────────────
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  document.head.appendChild(s);
+})();
+
+// ── 대본 엑셀 다운로드 ────────────────────────────────────────
+function downloadScript() {
+  if (typeof XLSX === 'undefined') {
+    showToast('⏳  잠시 후 다시 시도해주세요');
+    return;
+  }
+
+  const checked = ceremonies.filter(c => {
+    const cb = document.getElementById('cb_' + c.id);
+    return cb && cb.checked;
+  });
+
+  // ── 행 데이터 구성 ─────────────────────────────────────────
+  // 항상 4행이 헤더가 되도록: 1행 제공, 2행 주의사항, 3행 분위기(없으면 빈행), 4행 헤더
+  const rows = [];
+  rows.push(['제공 : 사회자이용진(@wedding_yong)', '', '', '']);
+  rows.push(['주의사항 : 결혼을 준비하고 계신 모든 예비 신랑신부님들께 조금이나마 도움이 되길 바라는 마음으로 제작하였습니다. 비상업적 용도로만 사용해주세요 :)', '', '', '']);
+  if (selectedMoods.size > 0) {
+    rows.push(['우리가 원하는 분위기 : ' + [...selectedMoods].map(n => '#' + n).join(' '), '', '', '']);
+  } else {
+    rows.push(['', '', '', '']); // 빈 행으로 4행 헤더 위치 맞춤
+  }
+  rows.push(['순서', '식순', '식순 설명', '멘트 예시']);
+  checked.forEach((c, i) => {
+    rows.push([i + 1, getCopyTitle(c), getDescription(c) || '', getMent(c) || '']);
+  });
+
+  // ── 워크시트 생성 ──────────────────────────────────────────
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+
+  // ── 병합 (1~3행 A:D 전체 병합) ────────────────────────────
+  ws['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } },
+  ];
+
+  // ── 틀 고정: 5행부터 스크롤 (4행까지 항상 표시) ───────────
+  ws['!freeze'] = { xSplit: 0, ySplit: 4 };
+
+  // ── 열 너비 ────────────────────────────────────────────────
+  ws['!cols'] = [
+    { wch: 8   },
+    { wch: 22  },
+    { wch: 38  },
+    { wch: 120 },
+  ];
+
+  // ── 행 높이 ────────────────────────────────────────────────
+  const rowHeights = [{ hpt: 20 }, { hpt: 40 }, { hpt: 20 }, { hpt: 22 }];
+  checked.forEach(c => {
+    const lines = ((getMent(c) || '').match(/\n/g) || []).length + 1;
+    rowHeights.push({ hpt: Math.max(20, lines * 15) });
+  });
+  ws['!rows'] = rowHeights;
+
+  // ── 워크북 저장 ────────────────────────────────────────────
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '결혼식 식순 대본');
+  XLSX.writeFile(wb, '결혼식_식순_대본_샘플.xlsx');
+  showToast('✓  대본 엑셀이 다운로드되었습니다!');
+}
 </script>
 </body>
 </html>
