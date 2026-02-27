@@ -1089,8 +1089,35 @@ function downloadScript() {
   // ── 워크북 저장 ────────────────────────────────────────────
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, '결혼식 식순 대본');
-  XLSX.writeFile(wb, '결혼식_식순_대본_샘플.xlsx');
-  showToast('✓  대본 엑셀이 다운로드되었습니다!');
+
+  // 카카오톡 인앱 브라우저 감지
+  const isKakao = /KAKAOTALK/i.test(navigator.userAgent);
+  if (isKakao) {
+    // 인앱 브라우저에서는 Blob 다운로드가 막혀있음 → 외부 브라우저 유도
+    showToast('📂  카카오 인앱에서는 외부 브라우저로 열어주세요!');
+    setTimeout(() => {
+      alert('📂 파일 다운로드 안내\n\n카카오톡 인앱 브라우저에서는 파일 저장이 제한됩니다.\n\n화면 하단 또는 우측 상단의 "⋯ 더보기" → "다른 브라우저로 열기" (또는 Safari / Chrome으로 열기)를 선택해주세요!');
+    }, 300);
+    return;
+  }
+
+  // 일반 브라우저: Blob URL 방식으로 강제 다운로드
+  try {
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '결혼식_식순_대본_샘플.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 1000);
+    showToast('✓  대본 엑셀이 다운로드되었습니다!');
+  } catch(e) {
+    // 최후 fallback
+    XLSX.writeFile(wb, '결혼식_식순_대본_샘플.xlsx');
+    showToast('✓  대본 엑셀이 다운로드되었습니다!');
+  }
 }
 </script>
 </body>
