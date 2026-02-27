@@ -544,16 +544,16 @@
       '혼인서약과 성혼선언이 무슨 차이인가요?'<br>
       '꼭 해야 하나요?'<br>
       '시간이 너무 짧지는 않을까요?'<br><br>
-      다른 준비들은 완벽하지만, 정작 가장 중요한 결혼식 당일의 식순에는 어려움을 겪으시는 많은 분들의 모습을 보고 꼭 도움을 드려야겠다 싶었어요.<br><br>
+      다른 준비들은 완벽하지만, 정작 가장 중요한 결혼식 식순 구성에 어려움을 겪으시는 분들이 많으시더라구요. 꼭 도움을 드려야겠다 싶었어요.<br><br>
       차디찬(?) 결혼식 준비 과정에서 <br>조금이나마 따스함을 느끼셨으면 합니다.<br><br>
     </p>
     <div class="intro-notice">
       <span class="intro-notice-title"><center>드리는 말씀</center></span>
       <ul class="intro-notice-list">
-        <li>주례 없는 결혼식 기준입니다만, 주례가 있더라도 도움되실겁니다!</li>
-        <li>각 식순별 시간(분)은 대략적 수치이며, 결혼식마다 조금씩 다를 수 있습니다.</li>
-        <li>경품 추첨, 닭 날리기 등 이벤트성 식순은 제외되어 있으며, 추가하실 경우 사회자와 꼭 협의하세요!</li>
-        <li>신부 입장, 성혼선언, 덕담 등은 혼주님과 꼭 대화를 나눠보세요!</li>
+        <li>주례 없는 예식 기준으로 작성했으나, 유무 관련 없이 도움되실겁니다!</li>
+        <li>식순별 시간(분)은 대략적 수치이며, 결혼식마다 조금씩 다를 수 있습니다.</li>
+        <li>기본에 충실하고자 '경품 추첨, 닭 날리기 등' 이벤트성 식순은 제외되어 있습니다. 추가 시 사회자와 꼭 협의하세요!</li>
+        <li>성혼선언, 덕담만큼은 부모님(혼주님)과 꼭 대화해보세요!</li>
         <li>무엇보다 '우리가 원하는 분위기'로, '우리답게' 만들어나가시길 바랄게요!</li>
       </ul>
     </div>
@@ -682,73 +682,9 @@
 
 </div><!-- /mainApp -->
 
-<style>
-  .inapp-banner {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 99999;
-    background: #1a1a1a;
-    color: #fff;
-    padding: 14px 16px;
-    text-align: center;
-    font-family: 'Noto Serif KR', sans-serif;
-    font-size: 13px;
-    line-height: 1.7;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-  }
-  .inapp-banner.show { display: block; }
-  .inapp-banner strong { color: #c9a96e; }
-  .inapp-banner .inapp-btn {
-    display: inline-block;
-    margin-top: 10px;
-    background: #c9a96e;
-    color: #2c2825;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 8px 20px;
-    border-radius: 20px;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    font-family: inherit;
-  }
-</style>
-<div class="inapp-banner" id="inappBanner">
-  <strong>📂 파일 저장을 위해 외부 브라우저로 열어주세요</strong><br>
-  <span id="inappGuideText"></span><br>
-  <button class="inapp-btn" onclick="openExternalBrowser()">외부 브라우저로 열기</button>
-</div>
-<script>
-(function(){
-  const ua = navigator.userAgent;
-  const isKakao = /KAKAOTALK/i.test(ua);
-  const isInsta = /Instagram/i.test(ua);
-  if (isKakao || isInsta) {
-    const banner = document.getElementById('inappBanner');
-    const guide = document.getElementById('inappGuideText');
-    if (isKakao) {
-      guide.textContent = '우측 하단 ⋯ → "다른 브라우저로 열기" 선택';
-    } else if (isInsta) {
-      guide.textContent = '우측 하단 ⋯ → "Safari(또는 Chrome)로 열기" 선택';
-    }
-    banner.classList.add('show');
-    // 배너 높이만큼 바디 패딩 추가
-    document.body.style.paddingTop = banner.offsetHeight + 'px';
-  }
-  window.openExternalBrowser = function() {
-    const url = location.href;
-    // iOS 인스타/카카오 탈출 시도
-    location.href = 'googlechrome://' + url.replace(/^https?:\/\//, '');
-    setTimeout(function(){ location.href = url; }, 500);
-  };
-})();
-</script>
+
 
 <div class="toast" id="toast"></div>
-
-<script>
-// ── 분위기 데이터 ──────────────────────────────────────────────
 const MOODS = [
   '진중하게', '짧고굵게', '장난기없이',
   '깔끔하게', '따뜻하게', '무난하게',
